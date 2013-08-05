@@ -19,18 +19,21 @@ class Email_SMS_Notifier():
 		""" Checks the mailbox for new important emails """ 
 		self._connection.select("[Gmail]/Important", readonly = True) # only look at emails marked important and don't mark things read after looking at them
 		messages = self._connection.search(None, 'UNSEEN')[1][0].split() # only report back on unread emails
+
 		for message in messages:
 			if message not in self._messageLst: # if not already reported
 				_ , data = self._connection.fetch(message, '(RFC822)')
-				mail = email.message_from_string(data[0][1])
+				mail = email.message_from_string(data[0][1]) # convert to email format
 				text = ""
+
 				for part in mail.walk():
 					if part.get_content_type() == "text/plain":
-						text = part.get_payload(decode=True)
+						text = part.get_payload(decode=True) # gets plain text from email 
+
 				self._messageLst.append(message)
-				sender = mail["From"].split("<")[0] # gets name of sender without the email address
+				sender = mail["From"].split("<")[0].rstrip() # gets name of sender without the email address
 				subject = mail["Subject"]
-				self.notify([("New message from " + sender + " Message = " + text).rstrip()])
+				self.notify([("New message from " + sender + ". SUBJECT - " + subject + " MESSAGE - " + text).rstrip()])
 
 	def notify(self, message):
 		""" Send notification text message with email details """
@@ -47,12 +50,12 @@ class Email_SMS_Notifier():
 			if sentCount == self._maxTexts: # make sure not too many texts are sent for large emails
 				return
 			else:
-				part = part.replace(":", "") # gets rid of pesky colons which SMS really doesn't like (results in blank texts)
+				part = part.replace(":", "") # gets rid of pesky colons interfere with SMS (colons result in blank texts)
 				server.sendmail(self._username, self._phone, part) # send message to phone carrier SMS email address
 				sentCount += 1
 
 	def start(self):
-		""" Starts the functionality """
+		""" Starts checking for new important mail """
 		while True:
 			self.checkMail()
 			time.sleep(self._restTime)
