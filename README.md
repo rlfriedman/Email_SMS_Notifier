@@ -9,3 +9,6 @@ Example Use
 notifier = Email_SMS_Notifier(yourGmailUsername, yourGmailPassword, 60, 3, yourSMSAddress)
 
 notifier.start()
+
+
+To find your SMS address check the list of SMS gateways and find your phone service provider https://en.wikipedia.org/wiki/List_of_SMS_gateways
