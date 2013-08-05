@@ -7,4 +7,5 @@ Example Use
 =================
 
 notifier = Email_SMS_Notifier(yourGmailUsername, yourGmailPassword, 60, 3, yourSMSAddress)
+
 notifier.start()
