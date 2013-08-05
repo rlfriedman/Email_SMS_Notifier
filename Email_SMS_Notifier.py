@@ -40,9 +40,9 @@ class Email_SMS_Notifier():
 		if len(message[0]) > 160: # if the message is greater than 160 characters, need to split it up into multiple texts
 			message = textwrap.wrap(message[0], 160)
 
-		server = smtplib.SMTP("smtp.gmail.com", 587)
-		server.starttls()
-		server.login(self._username, self._password) # login with username and password to send SMS
+		connection = smtplib.SMTP("smtp.gmail.com", 587)
+		connection.starttls()
+		connection.login(self._username, self._password) # login with username and password to send SMS
 
 		sentCount = 0
 
@@ -51,7 +51,7 @@ class Email_SMS_Notifier():
 				return
 			else:
 				part = part.replace(":", "") # gets rid of pesky colons interfere with SMS (colons result in blank texts)
-				server.sendmail(self._username, self._phone, part) # send message to phone carrier SMS email address
+				connection.sendmail(self._username, self._phone, part) # send message to phone carrier SMS email address
 				sentCount += 1
 
 	def start(self):
